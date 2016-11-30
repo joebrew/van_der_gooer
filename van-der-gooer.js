@@ -5,8 +5,8 @@ function normal_array( mean, stddev, size ){
     // from http://bl.ocks.org/nrabinowitz/2034281
     var generator = (function() {
         return d3.random.normal(mean, stddev);
-    }());   
-    
+    }());
+
     for( i=0; i< arr.length; i++ ){
         arr[i] = generator();
     }
@@ -23,13 +23,13 @@ var x2 = normal_array(4, 0.3, 200);
 var y2 = normal_array(4, 0.3, 200);
 
 var data = [
-    {    
+    {
         x: x0,
         y: y0,
         name: 'cluster1',
         mode: 'markers',
         marker: {
-          color: 'rgb(0,0,0)'
+          color: 'rgb(100,100,100)'
         }
     }, {
         x: x1,
@@ -37,25 +37,25 @@ var data = [
         name: 'cluster2',
         mode: 'markers'   ,
         marker: {
-          color: 'rgb(0,0,0)'
-        }             
+          color: 'rgb(20,20,50)'
+        }
     }, {
         x: x2,
         y: y2,
         name: 'cluster3',
         mode: 'markers',
         marker: {
-          color: 'rgb(0,0,0)'
-        }     
+          color: 'rgb(100, 10, 5)'
+        }
     }, {
         x: x1,
         y: y0,
         name: 'cluster4',
         mode: 'markers',
         marker: {
-          color: 'rgb(0,0,0)'
-        }      
-    }             
+          color: 'rgb(95,35,65)'
+        }
+    }
 ];
 
 var layout = {
@@ -83,7 +83,9 @@ function dbscan(d, eps, minPts) {
     visited.push(d[i]); 
     neighbourPoints.push(regionQuery(d, d[i], eps));
     if(neighbourPoints.length<minPts) {
-
+      noise.push(d[i]);
+    } else {
+      
     }
   }
 }
