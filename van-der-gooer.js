@@ -73,31 +73,49 @@ all_y.concat(y2);
 console.log(all_x);
 
 // DBSCAN implementation
-function dbscan(d, eps, minPts) {
+function dbscan(set, eps, minPts) {
   var c=[];
   var visited = [];
   var noise = [];
   //var dPrime = d;
-  for(var i=0;i<d.length;d++) {   
+  for(var i=0;i<set.length;d++) {   
     var neighbourPoints;
-    visited.push(d[i]); 
-    neighbourPoints.push(regionQuery(d, d[i], eps));
+    visited.push(set[i]); 
+    neighbourPoints.push(regionQuery(set, set[i], eps)); // review this code
     if(neighbourPoints.length<minPts) {
-      noise.push(d[i]);
+      noise.push(set[i]);
     } else {
       
     }
   }
 }
 
-function regionQuery(d, point, eps) {
+function regionQuery(set, point, eps) {
   var neighbourPoints = [];
-  for(var i=0;i<d.length;i++) {
-    if (pointDistance(point, d[i]) <= eps ) {
-      neighbourPoints.push(d[i]);
+  for(var i=0;i<set.length;i++) {
+    if (pointDistance(point, set[i]) <= eps ) {
+      neighbourPoints.push(set[i]);
     }
   }
   return neighbourPoints;
+}
+
+function expandCluster(point, neighbourPoints, cluster, eps, minPts, visited) {
+  // var visited = [];
+  cluster.push(point);
+  var neighbourPointsPrime = [];
+  for(var i=0;i<neighbourPoints.length;i++) {
+    if(!visited.find(neighbourPoints[i])) { //if find does not work like this, try with a callback function
+      visited.push(neighbourPoints[i]);
+      neighbourPointsPrime = regionQuery(neighbourPoints, neighbourPoints[i], eps);
+      if(neighbourPointsPrime.length>=minPts) {
+        neighbourPoints.concat(neighbourPointsPrime);
+      }
+      if(!cluster.find(neighbourPoints[i])) {
+        cluster.push(neighbourPoints[i]);
+      }
+    }
+  }
 }
 
 function pointDistance(point1, point2) {
