@@ -21,11 +21,11 @@ df <- readOGR('data/natural_earth_urban_areas',
 # Nigeria boundary
 # nigeria <- readOGR('data/nigeria/',
 #                    'NGA_adm0')
-nigeria <- readOGR('data/nigeria/',
-                   'NGA_adm1')
-# nigeria <- getData(name = 'GADM',
-#                    country = 'NGA',
-#                    level = 1)
+# nigeria <- readOGR('data/nigeria/',
+#                    'NGA_adm1')
+nigeria <- getData(name = 'GADM',
+                   country = 'NGA',
+                   level = 1)
 
 # Keep only those urban areas in nigeria
 keep_these <- over(df, polygons(nigeria))
@@ -37,6 +37,7 @@ df <- df[!is.na(keep_these),]
 results_list <- list()
 # sampler <- rbeta(1000, 1, 100) * 10000
 # for now, using fewer points
+set.seed(123)
 sampler <- rbeta(1000, 1, 10) * 100
 for (i in 1:nrow(df)){
   message(i)
@@ -95,6 +96,8 @@ for (i in 1:10){
   
   assign(paste0('errors_', i),
          x)
+  x <- data.frame(x)
+  write_csv(x, paste0('data/testing_data_sets/data_set_', i, '.csv'))
 }
 
 
