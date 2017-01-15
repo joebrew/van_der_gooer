@@ -72,12 +72,15 @@ var all_y = y0.concat(y1);
 all_y.concat(y2);
 console.log(all_x);
 
-// ----------------------------------------------------------------------------------------------------
+// ---------------------------------- LOADING DATA ------------------------------------------------------------------
 
+var dataset = [];
 d3.csv("./data/testing_data_sets/data_set_1.csv", function(data) {
   console.log(data);
+  dataset.concat(data);
 });
 
+dbscan(dataset, 5, 10);
 // ----------------------------------------------------------------------------------------------------
 
 // DBSCAN implementation
@@ -106,7 +109,8 @@ function dbscan(set, eps, minPts) {
   //var dPrime = d;
   for(var i=0;i<set.length;d++) {   
     var neighbourPoints = [];
-    visited.push(set[i]); 
+    visited.push(set[i]);
+    console.log(visited);
     neighbourPoints.concat(regionQuery(set, i, eps)); // review this code
     if(neighbourPoints.length<minPts) {
       noise.push(set[i]);
@@ -114,12 +118,18 @@ function dbscan(set, eps, minPts) {
       var clusterId = c.length;
       c.push([]);
       c[clusterId].push(set[i]);
+      console.log(c);
       var expansion = expandCluster(set[i], neighbourPoints, c[clusterId], eps, minPts, visited);
       visited = expansion.visited_points;
+      console.log(visited);
       neighbourPoints = expansion.neighbour_points;
+      console.log(neighbourPoints);
+      console.log(expansion.cluster);
       c = expansion.cluster;
+      
     }
   }
+  console.log(c);
 }
 
 function regionQuery(set, point_index, eps) {
@@ -128,7 +138,7 @@ function regionQuery(set, point_index, eps) {
     if(i===point_index) {
       continue;
     }
-    if (pointDistance(set[point_index], set[i]) <= eps ) {
+    if (geographicalDistance(set[point_index], set[i]) <= eps ) {
       neighbourPoints.push(set[i]);
     }
   }
@@ -162,4 +172,24 @@ function pointDistance(point1, point2) {
   var a = Math.abs(point1.x-point2.x);
   var b = Math.abs(point1.y-point2.y);
   return Math.sqrt(a*a + b*b);
+}
+
+function geographicalDistance (point1, point2) {
+  var Rk = 6373;
+  var lat1 = deg2rad(point1.lat);
+  var lon1 = deg2rad(point1.lng);
+  var lat2 = deg2rad(point2.lat);
+  var lon2 = deg2rad(point2.lng);
+
+  var dlat = lat2 - lat1;
+  var dlon = lon2 - lon1;
+
+  var a  = Math.pow(Math.sin(dlat/2),2) + Math.cos(lat1) * Math.cos(lat2) * Math.pow(Math.sin(dlon/2),2);
+	var c  = 2 * Math.atan2(Math.sqrt(a),Math.sqrt(1-a)); // great circle distance in radians
+	return c * Rk; // great circle distance in km
+}
+
+function deg2rad(deg) {
+  rad = deg * Math.PI/180; // radians = degrees * pi/180
+  return rad;
 }
