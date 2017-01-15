@@ -1,86 +1,88 @@
-var d3 = Plotly.d3
+var Plotly = require('plotly');
+// var d3 = Plotly.d3;
+var d3 = require('d3');
 
-function normal_array( mean, stddev, size ){
-    var arr = new Array(size), i;
-    // from http://bl.ocks.org/nrabinowitz/2034281
-    var generator = (function() {
-        return d3.random.normal(mean, stddev);
-    }());
+// function normal_array( mean, stddev, size ){
+//     var arr = new Array(size), i;
+//     // from http://bl.ocks.org/nrabinowitz/2034281
+//     var generator = (function() {
+//         return d3.random.normal(mean, stddev);
+//     }());
 
-    for( i=0; i< arr.length; i++ ){
-        arr[i] = generator();
-    }
-    return arr;
-}
+//     for( i=0; i< arr.length; i++ ){
+//         arr[i] = generator();
+//     }
+//     return arr;
+// }
 
-var x0 = normal_array(2, 0.45, 300);
-var y0 = normal_array(2, 0.45, 300);
+// var x0 = normal_array(2, 0.45, 300);
+// var y0 = normal_array(2, 0.45, 300);
 
-var x1 = normal_array(6, 0.4, 200);
-var y1 = normal_array(6, 0.4, 200)
+// var x1 = normal_array(6, 0.4, 200);
+// var y1 = normal_array(6, 0.4, 200)
 
-var x2 = normal_array(4, 0.3, 200);
-var y2 = normal_array(4, 0.3, 200);
+// var x2 = normal_array(4, 0.3, 200);
+// var y2 = normal_array(4, 0.3, 200);
 
-var data = [
-    {
-        x: x0,
-        y: y0,
-        name: 'cluster1',
-        mode: 'markers',
-        marker: {
-          color: 'rgb(100,100,100)'
-        }
-    }, {
-        x: x1,
-        y: y1,
-        name: 'cluster2',
-        mode: 'markers'   ,
-        marker: {
-          color: 'rgb(20,20,50)'
-        }
-    }, {
-        x: x2,
-        y: y2,
-        name: 'cluster3',
-        mode: 'markers',
-        marker: {
-          color: 'rgb(100, 10, 5)'
-        }
-    }, {
-        x: x1,
-        y: y0,
-        name: 'cluster4',
-        mode: 'markers',
-        marker: {
-          color: 'rgb(95,35,65)'
-        }
-    }
-];
+// var data = [
+//     {
+//         x: x0,
+//         y: y0,
+//         name: 'cluster1',
+//         mode: 'markers',
+//         marker: {
+//           color: 'rgb(100,100,100)'
+//         }
+//     }, {
+//         x: x1,
+//         y: y1,
+//         name: 'cluster2',
+//         mode: 'markers'   ,
+//         marker: {
+//           color: 'rgb(20,20,50)'
+//         }
+//     }, {
+//         x: x2,
+//         y: y2,
+//         name: 'cluster3',
+//         mode: 'markers',
+//         marker: {
+//           color: 'rgb(100, 10, 5)'
+//         }
+//     }, {
+//         x: x1,
+//         y: y0,
+//         name: 'cluster4',
+//         mode: 'markers',
+//         marker: {
+//           color: 'rgb(95,35,65)'
+//         }
+//     }
+// ];
 
-var layout = {
-    height: 600,
-    width: 680,
-    showlegend: true
-}
+// var layout = {
+//     height: 600,
+//     width: 680,
+//     showlegend: true
+// }
 
-Plotly.newPlot('myDiv', data, layout);
+// Plotly.newPlot('myDiv', data, layout);
 
-var all_x = x0.concat(x1);
-all_x.concat(x2);
-var all_y = y0.concat(y1);
-all_y.concat(y2);
-console.log(all_x);
+// var all_x = x0.concat(x1);
+// all_x.concat(x2);
+// var all_y = y0.concat(y1);
+// all_y.concat(y2);
+// console.log(all_x);
 
 // ---------------------------------- LOADING DATA ------------------------------------------------------------------
 
 var dataset = [];
-d3.csv("./data/testing_data_sets/data_set_1.csv", function(data) {
+d3.csv("./data_set_1.csv", function(data) {
   console.log(data);
-  dataset.concat(data);
+  dataset.push(data); 
+  dbscan(data, 5, 10);
 });
-
-dbscan(dataset, 5, 10);
+// dbscan(dataset, 5, 10);
 // ----------------------------------------------------------------------------------------------------
 
 // DBSCAN implementation
@@ -106,11 +108,10 @@ function dbscan(set, eps, minPts) {
   var c=[];
   var visited = [];
   var noise = [];
-  //var dPrime = d;
-  for(var i=0;i<set.length;d++) {   
+  // var dPrime = d;
+  for(var i=0; i < set.length; i++) {   
     var neighbourPoints = [];
     visited.push(set[i]);
-    console.log(visited);
     neighbourPoints.concat(regionQuery(set, i, eps)); // review this code
     if(neighbourPoints.length<minPts) {
       noise.push(set[i]);
@@ -118,15 +119,10 @@ function dbscan(set, eps, minPts) {
       var clusterId = c.length;
       c.push([]);
       c[clusterId].push(set[i]);
-      console.log(c);
       var expansion = expandCluster(set[i], neighbourPoints, c[clusterId], eps, minPts, visited);
       visited = expansion.visited_points;
-      console.log(visited);
       neighbourPoints = expansion.neighbour_points;
-      console.log(neighbourPoints);
-      console.log(expansion.cluster);
       c = expansion.cluster;
-      
     }
   }
   console.log(c);
