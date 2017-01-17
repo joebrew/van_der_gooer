@@ -1,6 +1,7 @@
-var Plotly = require('plotly');
+// var Plotly = require('plotly');
 // var d3 = Plotly.d3;
-var d3 = require('d3');
+
+// var d3 = require('d3');
 
 // function normal_array( mean, stddev, size ){
 //     var arr = new Array(size), i;
@@ -78,6 +79,7 @@ var d3 = require('d3');
 
 var dataset = [];
 d3.csv("./data_set_1.csv", function(data) {
+  debugger;
   console.log(data);
   dataset.push(data); 
   dbscan(data, 5, 10);
