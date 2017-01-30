@@ -12,6 +12,7 @@ library(raster)
 library(rgdal)
 library(broom)
 library(dbscan)
+library(df2json)
 
 # Read in urban areas
 df <- readOGR('data/natural_earth_urban_areas', 
@@ -98,6 +99,12 @@ for (i in 1:10){
          x)
   x <- data.frame(x)
   write_csv(x, paste0('data/testing_data_sets/data_set_', i, '.csv'))
+  # Write json too
+  message('writing json')
+  y <- df2json(x)
+  fileConn<-file(paste0('data/testing_data_sets/data_set_', i, '.json'))
+  writeLines(y, fileConn)
+  close(fileConn)
 }
 
 

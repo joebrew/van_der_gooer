@@ -77,13 +77,15 @@
 
 // ---------------------------------- LOADING DATA ------------------------------------------------------------------
 
-var dataset = [];
-d3.csv("./data_set_1.csv", function(data) {
-  debugger;
-  console.log(data);
-  dataset.push(data); 
-  dbscan(data, 5, 10);
-});
+
+var json = require('./testing_data_sets/data_set_1.json');
+var dataset = JSON.parse(json);
+// d3.csv("./data_set_1.csv", function(data) {
+//   debugger;
+//   console.log(data);
+//   dataset.push(data); 
+//   dbscan(data, 5, 10);
+// });
 // dbscan(dataset, 5, 10);
 // ----------------------------------------------------------------------------------------------------
 
