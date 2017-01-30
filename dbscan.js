@@ -1,4 +1,4 @@
-exports dbscan = function(set, eps, minPts) {
+var dbscan = function(set, eps, minPts) {
     var c = [];
     var visited = [];
     var noise = [];
@@ -20,7 +20,7 @@ exports dbscan = function(set, eps, minPts) {
         }
     }
     console.log(c);
-}
+};
 
 function regionQuery(set, point_index, eps) {
     var neighbourPoints = [];
@@ -83,3 +83,4 @@ function deg2rad(deg) {
     rad = deg * Math.PI / 180; // radians = degrees * pi/180
     return rad;
 }
+module.exports = dbscan;
