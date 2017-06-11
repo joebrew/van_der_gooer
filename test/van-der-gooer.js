@@ -1,4 +1,5 @@
 const expect = require('chai').expect
+const should = require('chai').should()
 const vanDerGoer = require('../van-der-gooer')
 
 describe('Geographical Distance', function() {
@@ -17,10 +18,13 @@ describe('Neighbourhoods', () => {
         expect(vanDerGoer.regionQuery(testSet, 0, 200)).to.be.an('array')
     })
     it('are a correct set', function() {
-        expect(vanDerGoer.regionQuery(testSet, 0, 200)[0].lat).to.equal(41.390872)
+        expect(vanDerGoer.regionQuery(testSet, 0, 200)[0].lat).to.equal(41.390872) && expect(vanDerGoer.regionQuery(testSet, 0, 200)).to.have.lengthOf(2)
     })
     it('do not contain an incorrect set', function() {
         expect(vanDerGoer.regionQuery(testSet, 0, 20)).to.be.empty
+    })
+    it('should contain only elements given', function() {
+        vanDerGoer.regionQuery(testSet, 0, 200)[0].should.be.oneOf(testSet).with.property('lat')
     })
 })
 
