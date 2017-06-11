@@ -56,18 +56,16 @@ module.exports = {
         console.log(c);
     },
 
-    regionQuery: function(set, point_index, eps) {
-        var neighbourPoints = [];
-        for (var i = 0; i < set.length; i++) {
-            if (i === point_index) {
-                continue;
+    regionQuery: (set, point_index, eps) => set
+        .filter((element) => (element.lat !== set[point_index].lat) && (element.lng !== set[point_index].lng))
+        .reduce((acc, current) => {
+            if (geographicalDistance(set[point_index], current) <= eps) {
+                console.log("Acc: ", acc, "Current: ", current)
+                return acc.concat(current)
+            } else {
+                return acc || []
             }
-            if (geographicalDistance(set[point_index], set[i]) <= eps) {
-                neighbourPoints.push(set[i]);
-            }
-        }
-        return neighbourPoints;
-    },
+        }, []),
 
     expandCluster: function(point, neighbourPoints, cluster, eps, minPts, visited) {
         // var visited = [];
