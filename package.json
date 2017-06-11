@@ -1,0 +1,30 @@
+{
+  "name": "van_der_gooer",
+  "version": "1.0.0",
+  "description": "Van Der Goer problem of density based clustering for geospatial error correction",
+  "main": "van-der-gooer.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "dependencies": {
+    "d3": "^4.4.1",
+    "plotly": "^1.0.6"
+  },
+  "devDependencies": {
+    "chai": "^4.0.2",
+    "mocha": "^3.4.2"
+  },
+  "scripts": {
+    "test": "mocha "
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joebrew/van_der_gooer.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/joebrew/van_der_gooer/issues"
+  },
+  "homepage": "https://github.com/joebrew/van_der_gooer#readme"
+}
