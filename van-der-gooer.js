@@ -32,31 +32,58 @@
 // ]
 
 module.exports = {
-    dbscan: function(set, eps, minPts) {
+    dbscan: function(set, minPts, eps) {
         let clusters = [] // set containing all the clusters
         let visited = [] // set of visited points
         let noise = [] // points not belonging to any clusters
 
         for (let i = 0; i < set.length; i = i + 1) {
-            let neighbourPoints = regionQuery(set, i, eps) || [] // get all points neighbouring given point
-
-            visited.push(set[i]) // mark as visited
-
-            if (neighbourPoints.length < minPts) {
-                noise.push(set[i]) // if not complying with clustering requirements mark as noise
+            if (visited.find((element) => element.lat === set[i].lat && element.lng === set[i].lng)) {
+                continue
             } else {
-                let clusterId = clusters.length // define id of the current cluster
-                clusters.push([]) // create new empty cluster for the currently expanding one
-                clusters[clusterId].push(set[i]) // add current point to the current cluster
-                let expansion = expandCluster(set[i], neighbourPoints, clusters[clusterId], eps, minPts, visited) // expand current cluster
-                visited = expansion.visited_points // mark expanded points as visited
-                clusters[clusterId] = expansion.cluster
+                let neighbourPoints = regionQuery(set, i, eps) || [] // get all points neighbouring given point
+                neighbourPoints.push(set[i])
+                visited.push(set[i]) // mark as visited
+
+                if (neighbourPoints.length < minPts) {
+                    noise.push(set[i]) // if not complying with clustering requirements mark as noise
+                } else {
+                    let clusterId = clusters.length // define id of the current cluster
+                    clusters.push([]) // create new empty cluster for the currently expanding one
+                    clusters[clusterId].push(set[i]) // add current point to the current cluster
+                    let neighbourPointsPrime = []
+                    for (let j = 0; j < neighbourPoints.length; j = j + 1) {
+                        if (visited.find((element) => element.lat !== neighbourPoints[j].lat && element.lng !== neighbourPoints[j].lng)) {
+                            visited.push(neighbourPoints[j])
+                            let currentIdxInSet = set.findIndex((element) => element.lat === neighbourPoints[j].lat && element.lng === neighbourPoints[j].lng)
+                            neighbourPointsPrime = regionQuery(set, currentIdxInSet, eps)
+                            if (neighbourPointsPrime.length >= minPts) {
+                                neighbourPoints = neighbourPointsPrime
+                                    .filter((el1) => {
+                                        let neighbourSet = neighbourPoints.find(el2 => el1.lat == el2.lat) || { lng: null }
+                                        return el1.lng !== neighbourSet.lng
+                                    })
+                                    .concat(neighbourPoints)
+                            }
+                        }
+                    }
+                    // if (clusters[clusterId].find((element) => element.lat !== neighbourPoints[j].lat && element.lng !== neighbourPoints[j].lng)) {
+                    //     clusters[clusterId] = clusters[clusterId].concat(neighbourPoints[j])
+                    // }
+                    clusters[clusterId] = neighbourPoints
+                }
             }
         }
-        console.log(c)
+        // console.log('noise:', noise)
+        // clusters.forEach((element, i) => console.log('Cluster', i, ': \n', element))
+        return {
+            clusters: clusters,
+            noise: noise
+        }
     },
 
     regionQuery: (set, point_index, eps) => set
+        .filter((element) => (element.lat !== set[point_index].lat) && (element.lng !== set[point_index].lng))
         .reduce((acc, current) => {
             if (geographicalDistance(set[point_index], current) <= eps) {
                 return acc.concat(current)
@@ -64,29 +91,6 @@ module.exports = {
                 return acc || []
             }
         }, []),
-
-    expandCluster: (point, neighbourPoints, eps, minPts, visited) => { // why is it working only on neighbouring points set and not on the whole dataset?
-        let cluster = [point]
-        let neighbourPointsPrime = []
-
-        for (let i = 0; i < neighbourPoints.length; i++) {
-            if (!visited.find(neighbourPoints[i])) {
-                visited.push(neighbourPoints[i]);
-                neighbourPointsPrime = regionQuery(neighbourPoints, neighbourPoints[i], eps);
-                if (neighbourPointsPrime.length >= minPts) {
-                    neighbourPoints.concat(neighbourPointsPrime);
-                }
-                if (!cluster.find(neighbourPoints[i])) {
-                    cluster.push(neighbourPoints[i]);
-                }
-            }
-        }
-        return {
-            visited_points: visited,
-            neighbour_points: neighbourPoints,
-            cluster: cluster
-        }
-    },
 
     geographicalDistance: function(point1, point2) {
         let Rk = 6373;
