@@ -33,7 +33,12 @@ describe('Density Based Clustering', function() {
     describe('DBSCAN clustering', function() {
         let testSet = [{ lat: 41.3915104, lng: 2.1872686 }, { lat: 41.390872, lng: 2.185977 }, { lat: 41.391077, lng: 2.186229 }, { "lat": 5.25398996489777, "lng": 13.1197878250267 }, { lat: 5.25074004673171, lng: 13.1219781282893 }]
 
-        it('returns a set of clusters', function() {
+        it('produces an object with clusters and noise points', function() {
+            vanDerGoer.dbscan(testSet, 2, 500).should.be.an('object').which.has.a.property('clusters')
+            vanDerGoer.dbscan(testSet, 2, 500).should.be.an('object').which.has.a.property('noise')
+        })
+
+        it('gives a set of clusters', function() {
             expect(vanDerGoer.dbscan(testSet, 3, 250).clusters).to.be.an('array')
         })
 
@@ -41,7 +46,7 @@ describe('Density Based Clustering', function() {
             expect(vanDerGoer.dbscan(testSet, 3, 250).clusters[0]).to.be.an('array')
         })
 
-        it('returns set of noise points', function() {
+        it('gives set of noise points', function() {
             expect(vanDerGoer.dbscan(testSet, 3, 250).noise).to.be.an('array')
         })
 
